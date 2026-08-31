@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Payroll Manager{% endblock %}</title><link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="min-h-screen lg:flex">
+  <aside class="sidebar lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[244px] lg:flex-col">
+    <div class="flex items-center gap-3 border-b border-white/10 px-5 py-5"><div class="grid h-9 w-9 place-items-center rounded-lg bg-brand-500 text-sm font-black text-white">PM</div><div class="min-w-0"><p class="font-semibold leading-tight">Payroll Manager</p><p class="truncate text-xs text-white/45">Harbour Engineering</p></div></div>
+    <nav class="nav-scroll flex gap-1 overflow-x-auto p-3 lg:flex-1 lg:flex-col lg:overflow-y-auto">
+      <p class="nav-label">Workspace</p>
+      <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}nav-active{% endif %}" href="{% url 'dashboard' %}"><span>⌂</span> Dashboard</a>
+      <a class="nav-link {% if 'employee' in request.resolver_match.url_name %}nav-active{% endif %}" href="{% url 'employee-list' %}"><span>♙</span> Employees</a>
+      <a class="nav-link {% if 'project' in request.resolver_match.url_name %}nav-active{% endif %}" href="{% url 'project-list' %}"><span>◇</span> Projects</a>
+      <a class="nav-link {% if 'timesheet' in request.resolver_match.url_name %}nav-active{% endif %}" href="{% url 'timesheet-list' %}"><span>◷</span> Timesheets</a>
+      <p class="nav-label mt-4">Payroll</p>
+      <a class="nav-link {% if 'payroll' in request.resolver_match.url_name %}nav-active{% endif %}" href="{% url 'payroll-list' %}"><span>€</span> Payroll</a>
+      <a class="nav-link {% if 'payslip' in request.resolver_match.url_name %}nav-active{% endif %}" href="{% url 'payslip-list' %}"><span>▤</span> Payslips</a>
+      <a class="nav-link {% if request.resolver_match.url_name == 'settings' %}nav-active{% endif %}" href="{% url 'settings' %}"><span>⚙</span> Settings</a>
+    </nav>
+    <div class="hidden border-t border-white/10 p-4 lg:block"><div class="mb-3 flex items-center gap-3"><div class="avatar avatar-dark">RK</div><div class="min-w-0"><p class="truncate text-sm font-semibold">{{ user.get_username|default:'Rachel Kelly' }}</p><p class="text-xs text-white/45">Payroll administrator</p></div></div><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="text-xs text-white/45 hover:text-white">Sign out</button></form></div>
+  </aside>
+  <main class="min-w-0 flex-1">
+    <header class="topbar"><div><p class="text-sm font-semibold text-slate-700">August 2026 payroll</p><p class="text-xs text-slate-400">Ireland · EUR</p></div><div class="flex items-center gap-3"><span class="hidden text-xs text-slate-500 sm:inline">Last updated 28 Aug, 16:42</span><span class="h-2 w-2 rounded-full bg-emerald-500"></span></div></header>
+    <div class="mx-auto max-w-[1680px] p-4 md:p-6 xl:p-8">{% include 'partials/messages.html' %}{% block content %}{% endblock %}</div>
+  </main>
+</div>
+{% else %}{% block anonymous %}{% endblock %}{% endif %}
+<script>
+document.addEventListener('click',(event)=>{const opener=event.target.closest('[data-dialog-open]');if(opener){const dialog=document.getElementById(opener.dataset.dialogOpen);if(dialog){Object.entries(opener.dataset).forEach(([key,value])=>{const target=dialog.querySelector(`[data-field="${key}"]`);if(target)target.textContent=value;});dialog.showModal();}}if(event.target.closest('[data-dialog-close]'))event.target.closest('dialog').close();});document.querySelectorAll('dialog').forEach((dialog)=>dialog.addEventListener('click',(event)=>{if(event.target===dialog)dialog.close();}));
+</script>
+{% block scripts %}{% endblock %}
+</body></html>
